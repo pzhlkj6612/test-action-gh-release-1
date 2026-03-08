@@ -20,11 +20,11 @@ jobs:
       matrix:
         action-gh-release-tag: ['v2.5.0', 'v2.4.2']
     steps:
-      - name: Use softprops/action-gh-release@${{ matrix.action-gh-release-version }}
+      - name: Use softprops/action-gh-release@${{ matrix.action-gh-release-tag }}
         uses: actions/checkout@v6
         with:
           repository: softprops/action-gh-release
-          ref: ${{ matrix.action-gh-release-version }}
+          ref: ${{ matrix.action-gh-release-tag }}
 
       - name: Create a dummy release asset
         run: echo "hello" > asset.txt
@@ -33,7 +33,7 @@ jobs:
         id: release
         uses: ./
         with:
-          name: Release from ${{ matrix.action-gh-release-version }}
+          name: Release from ${{ matrix.action-gh-release-tag }}
           files: asset.txt
 
       - name: Show output asset URLs
