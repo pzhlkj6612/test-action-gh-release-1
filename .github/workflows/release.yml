@@ -61,3 +61,5 @@ jobs:
             echo "::error title=Wrong 'browser_download_url'::$browser_download_url"
             exit 1
           fi
+
+          exit 0
