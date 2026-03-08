@@ -18,7 +18,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        action-gh-release-tag: ['v2.5.0', 'v2.4.2']
+        include:
+          - action-gh-release-tag: 'v2.4.2'
+            check-url: '0'
+          - action-gh-release-tag: 'v2.5.0'
+            check-url: '1'
     steps:
       - name: Use softprops/action-gh-release@${{ matrix.action-gh-release-tag }}
         uses: actions/checkout@v6
@@ -26,8 +30,10 @@ jobs:
           repository: softprops/action-gh-release
           ref: ${{ matrix.action-gh-release-tag }}
 
-      - name: Create a dummy release asset
-        run: echo "hello" > asset.txt
+      - name: Sleep and Create a dummy release asset
+        run: |
+          sleep $(( ( RANDOM % 10 ) + 1 ))
+          echo "hello" > asset.txt
 
       - name: Create Release
         id: release
@@ -36,9 +42,10 @@ jobs:
           name: Release from ${{ matrix.action-gh-release-tag }}
           files: asset.txt
 
-      - name: Show output asset URLs
+      - name: Show and check output asset URLs
         env:
           ASSETS: ${{ steps.release.outputs.assets }}
+          CHECK_URL: ${{ matrix.check-url }}
         run: |
           echo "assets output:"
           echo "$ASSETS" | jq .
@@ -48,8 +55,10 @@ jobs:
 
           browser_download_url="$( echo "$ASSETS" | jq --raw-output '.[0].browser_download_url' )"
 
-          echo "$browser_download_url" | grep -P 'untagged-[a-z0-9]{20}'
-          if [[ '0' = "$?" ]]; then
-            echo "::error title=Wrong 'browser_download_url'::$browser_download_url"
-            exit 1
+          if [[ '1' = "$CHECK_URL" ]]; then
+            echo "$browser_download_url" | grep -P 'untagged-[a-z0-9]{20}'
+            if [[ '0' = "$?" ]]; then
+              echo "::error title=Wrong 'browser_download_url'::$browser_download_url"
+              exit 1
+            fi
           fi
