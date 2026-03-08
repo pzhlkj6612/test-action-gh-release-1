@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
         include:
           - {action-repo: 'softprops/action-gh-release', action-ref: 'v2.4.2', check-url: '0'}
