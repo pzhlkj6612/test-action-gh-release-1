@@ -6,8 +6,7 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    tags: ["v*"]
 
 permissions:
   contents: write
@@ -19,10 +18,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - action-gh-release-tag: 'v2.4.2'
-            check-url: '0'
-          - action-gh-release-tag: 'v2.5.0'
-            check-url: '1'
+          - {action-gh-release-tag: 'v2.4.2', check-url: '0'}
+          - {action-gh-release-tag: 'v2.5.0', check-url: '1'}
     steps:
       - name: Use softprops/action-gh-release@${{ matrix.action-gh-release-tag }}
         uses: actions/checkout@v6
