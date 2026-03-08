@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    timeout-minutes: 2
     strategy:
       fail-fast: false
       # GitHub Web does not allow multiple release point to the same tag.
