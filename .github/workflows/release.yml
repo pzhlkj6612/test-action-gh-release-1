@@ -30,7 +30,7 @@ jobs:
 
       - name: Create Release
         id: release
-        uses: .
+        uses: ./
         with:
           files: asset.txt
 
