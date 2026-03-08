@@ -40,7 +40,7 @@ jobs:
           # https://cli.github.com/manual/gh_release
 
           function gh {
-            gh --repo '${{ github.repository }}' $@
+            "$(command -v gh)" --repo '${{ github.repository }}' $@
           }
 
           existing_releases="$(gh release list --json 'name' --jq '.[].name')"
