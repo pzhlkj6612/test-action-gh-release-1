@@ -12,6 +12,10 @@ jobs:
       contents: write
     strategy:
       fail-fast: false
+      # GitHub Web does not allow multiple release point to the same tag.
+      # So, we should not break it by hacks.
+      max-parallel: 1
+
       matrix:
         include:
           - {action-repo: 'softprops/action-gh-release', action-ref: 'v2.4.2', check-url: '0'}
@@ -24,10 +28,28 @@ jobs:
           repository: ${{ matrix.action-repo }}
           ref: ${{ matrix.action-ref }}
 
-      - name: Sleep and Create a dummy release asset
+      - name: Create a dummy release asset
+        run: echo "hello" > asset.txt
+
+      - name: Delete Old Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          sleep $(( ( RANDOM % 10 ) + 1 ))
-          echo "hello" > asset.txt
+          set -ex
+
+          # https://cli.github.com/manual/gh_release
+
+          existing_releases="$(gh release list --json 'name' --jq '.[].name')"
+          echo "existing_releases = $existing_releases"
+
+          for r in existing_releases; do
+            gh release delete "$r" --cleanup-tag --yes
+
+            while gh release view "$r"; do
+              echo 'the release is still there'
+              sleep 5
+            done
+          done
 
       - name: Create Release
         id: release
@@ -61,16 +83,3 @@ jobs:
           fi
 
           exit 0
-
-  viewer:
-    runs-on: ubuntu-latest
-    needs: release
-    steps:
-      # for GitHub CLI
-      - name: Checkout
-        uses: actions/checkout@v6.0.1
-
-      - name: List existing releases
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release list
