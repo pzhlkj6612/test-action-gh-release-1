@@ -1,16 +1,12 @@
 # Minimal workflow to demonstrate https://github.com/softprops/action-gh-release/issues/713
-# After v2.5.0, the output `assets` URLs contain "untagged-<hex>" instead of the actual tag,
-# because the assets output is captured while the release is still a draft.
+# At v2.5.0, the output `assets` URLs contain "untagged-<hex>" instead of the actual tag.
 
 name: Release
-
 on:
   push:
     tags: ["v*"]
-
 permissions:
   contents: write
-
 jobs:
   release:
     runs-on: ubuntu-latest
