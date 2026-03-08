@@ -1,0 +1,38 @@
+# Minimal workflow to demonstrate https://github.com/softprops/action-gh-release/issues/713
+# After v2.5.0, the output `assets` URLs contain "untagged-<hex>" instead of the actual tag,
+# because the assets output is captured while the release is still a draft.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create a dummy release asset
+        run: echo "hello" > asset.txt
+
+      - name: Create Release
+        id: release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: asset.txt
+
+      - name: Show output asset URLs
+        env:
+          ASSETS: ${{ steps.release.outputs.assets }}
+        run: |
+          echo "assets output:"
+          echo "$ASSETS" | jq .
+          echo ""
+          echo "Expected URL pattern: .../releases/download/${{ github.ref_name }}/asset.txt"
+          echo "If the URL above contains 'untagged-' instead of the tag name, the bug is present."
