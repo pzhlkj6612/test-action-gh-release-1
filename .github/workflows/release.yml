@@ -33,6 +33,7 @@ jobs:
         id: release
         uses: ./
         with:
+          name: Release from ${{ matrix.action-gh-release-version }}
           files: asset.txt
 
       - name: Show output asset URLs
