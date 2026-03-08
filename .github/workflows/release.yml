@@ -15,15 +15,16 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        action-gh-release-version: ['v2.5.0', 'v2.4.2']
     steps:
-      - uses: actions/checkout@v4
-
       - name: Create a dummy release asset
         run: echo "hello" > asset.txt
 
       - name: Create Release
         id: release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@${{ matrix.action-gh-release-version }}
         with:
           files: asset.txt
 
@@ -36,3 +37,11 @@ jobs:
           echo ""
           echo "Expected URL pattern: .../releases/download/${{ github.ref_name }}/asset.txt"
           echo "If the URL above contains 'untagged-' instead of the tag name, the bug is present."
+
+          browser_download_url="$( echo "$ASSETS" | jq --raw-output '.[0].browser_download_url' )"
+
+          echo "$browser_download_url" | grep -P 'untagged-[a-z0-9]{20}'
+          if [[ '0' = "$?" ]]; then
+            echo "::error title=Wrong 'browser_download_url'::$browser_download_url"
+            exit 1
+          fi
