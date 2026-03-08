@@ -15,15 +15,15 @@ jobs:
       max-parallel: 1
       matrix:
         include:
-          - {repo: 'softprops/action-gh-release', action-gh-release-tag: 'v2.4.2', check-url: '0'}
-          - {repo: 'softprops/action-gh-release', action-gh-release-tag: 'v2.5.0', check-url: '1'}
-          - {repo: 'pzhlkj6612/forked-action-gh-release', action-gh-release-tag: 'copilot/fix-asset-url-generation', check-url: '1'}
+          - {action-repo: 'softprops/action-gh-release', action-ref: 'v2.4.2', check-url: '0'}
+          - {action-repo: 'softprops/action-gh-release', action-ref: 'v2.5.0', check-url: '1'}
+          - {action-repo: 'pzhlkj6612/forked-action-gh-release', action-ref: 'copilot/fix-asset-url-generation', check-url: '1'}
     steps:
-      - name: Use ${{ matrix.repo }}@${{ matrix.action-gh-release-tag }}
+      - name: Use ${{ matrix.action-repo }}@${{ matrix.action-ref }}
         uses: actions/checkout@v6
         with:
-          repository: ${{ matrix.repo }}
-          ref: ${{ matrix.action-gh-release-tag }}
+          repository: ${{ matrix.action-repo }}
+          ref: ${{ matrix.action-ref }}
 
       - name: Sleep and Create a dummy release asset
         run: |
@@ -34,7 +34,7 @@ jobs:
         id: release
         uses: ./
         with:
-          name: Release from ${{ matrix.repo }}@${{ matrix.action-gh-release-tag }}
+          name: Release from ${{ matrix.action-repo }}@${{ matrix.action-ref }}
           files: asset.txt
 
       - name: Show and check output asset URLs
