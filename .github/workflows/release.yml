@@ -17,14 +17,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        action-gh-release-version: ['v2.5.0', 'v2.4.2']
+        action-gh-release-tag: ['v2.5.0', 'v2.4.2']
     steps:
+      - name: Use softprops/action-gh-release@${{ matrix.action-gh-release-version }}
+        uses: actions/checkout@v6
+        with:
+          repository: softprops/action-gh-release
+          ref: ${{ matrix.action-gh-release-version }}
+
       - name: Create a dummy release asset
         run: echo "hello" > asset.txt
 
       - name: Create Release
         id: release
-        uses: softprops/action-gh-release@${{ matrix.action-gh-release-version }}
+        uses: .
         with:
           files: asset.txt
 
